@@ -70,7 +70,7 @@ class PCParseJasmine  {
 					return PCBash.putStringInFile(this.cloudPage, PCParseJasmine.tempDir() + "/cloud-" + this.seed)
 				})
 				.then(()=>{
-					const command = 'docker run --rm -d ' +
+					const command = 'docker run -d ' +
 					'--name parse-' + this.seed + ' ' +
 					'-v ' + PCParseJasmine.tempDir() + '/config-' + this.seed + ':/parse-server/configuration.json ' +
 					'-v ' + PCParseJasmine.tempDir() + '/cloud-' + this.seed + ':/parse-server/cloud/main.js ' +
