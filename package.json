@@ -1,0 +1,32 @@
+{
+  "name": "@panda-clouds/parse-jasmine",
+  "scripts": {
+    "pretest": "eslint .",
+    "test": "jasmine ./spec/*.spec.js"
+  },
+  "description": "This class uses docker to spin up a local mongo and parse server instance for testing",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/panda-clouds/string.git"
+  },
+  "author": {
+    "name": "Marc Smith",
+    "email": "mr.marcsmith@me.com",
+    "url": "https://github.com/mrmarcsmith"
+  },
+  "license": "MIT",
+  "main": "src/PCParseJasmine.js",
+  "engines": {
+    "node": ">= 8"
+  },
+  "dependencies": {
+    "@panda-clouds/parse-bash": "^1.1.0",
+    "parse": "^2.1.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.18.1",
+    "eslint-plugin-jasmine": "^2.10.1",
+    "jasmine": "^3.1.0"
+  }
+}
