@@ -20,6 +20,15 @@ class PCParseJasmine  {
 	static defaultDBName(){
 		return "parse-test";
 	}
+	static tempDir(){
+
+		// we have a "temp" directory in the root of this projects
+		var path = __dirname + '/../temp';
+
+		// Notice the double-backslashes on this following line
+		path = path.replace(/ /g, '\\ ');
+		return path;
+	}
 
 	startParseServer(){
 		process.env.TESTING = true;
@@ -55,16 +64,16 @@ class PCParseJasmine  {
 					app.serverURL = app.publicServerURL;
 					app.cloud = '/parse-server/cloud/main.js';
 					config.apps = [app];
-					return PCBash.putStringInFile(config,"/tmp/config-" + this.seed)
+					return PCBash.putStringInFile(config, PCParseJasmine.tempDir() + "/config-" + this.seed)
 				})
 				.then(()=>{
-					return PCBash.putStringInFile(this.cloudPage,"/tmp/cloud-" + this.seed)
+					return PCBash.putStringInFile(this.cloudPage, PCParseJasmine.tempDir() + "/cloud-" + this.seed)
 				})
 				.then(()=>{
 					const command = 'docker run --rm -d ' +
 					'--name parse-' + this.seed + ' ' +
-					'-v /tmp/config-' + this.seed + ':/parse-server/configuration.json ' +
-					'-v /tmp/cloud-' + this.seed + ':/parse-server/cloud/main.js ' +
+					'-v ' + PCParseJasmine.tempDir() + '/config-' + this.seed + ':/parse-server/configuration.json ' +
+					'-v ' + PCParseJasmine.tempDir() + '/cloud-' + this.seed + ':/parse-server/cloud/main.js ' +
 					'-p 1337:1337 ' +
 					'parseplatform/parse-server:2.8.4 ' +
 					'/parse-server/configuration.json';
@@ -102,13 +111,13 @@ class PCParseJasmine  {
 						});
 				})
 				.then(()=>{
-					const command = 'rm "/tmp/cloud-' + this.seed + '"';
+					const command = 'rm ' + PCParseJasmine.tempDir() + '/cloud-' + this.seed;
 					return PCBash.runCommandPromise(command)
 						.catch(()=>{
 						});
 				})
 				.then(()=>{
-					const command = 'rm "/tmp/config-' + this.seed + '"';
+					const command = 'rm ' + PCParseJasmine.tempDir() + '/config-' + this.seed;
 					return PCBash.runCommandPromise(command)
 						.catch(()=>{
 						});
