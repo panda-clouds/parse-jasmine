@@ -23,7 +23,7 @@ class PCParseJasmine  {
 	static tempDir(){
 
 		// we have a "temp" directory in the root of this projects
-		var path = __dirname + '/../temp';
+		var path = __dirname;
 
 		// Notice the double-backslashes on this following line
 		path = path.replace(/ /g, '\\ ');
