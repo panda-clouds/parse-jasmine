@@ -27,6 +27,9 @@ class PCParseJasmine  {
 
 		// Notice the double-backslashes on this following line
 		path = path.replace(/ /g, '\\ ');
+
+		// eslint-disable-next-line no-console
+		console.log("tempDir: " + path)
 		return path;
 	}
 
