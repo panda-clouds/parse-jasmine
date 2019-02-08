@@ -52,6 +52,17 @@ class PCParseJasmine  {
 
 			return PCBash.runCommandPromise('docker ps')
 				.then(()=>{
+					return PCBash.runCommandPromise('uname -s')
+						.then((result)=>{
+							if(result == 'Darwin'){
+								// this hack is requried when using Docker for mac
+								this.hostURL = 'host.docker.internal'
+							}else if(result == 'Linux'){
+								this.hostURL = 'localhost'
+							}
+						})
+				})
+				.then(()=>{
 					return PCBash.runCommandPromise('mkdir -p ' + PCParseJasmine.tempDir())
 				})
 				.then(()=>{
@@ -74,7 +85,7 @@ class PCParseJasmine  {
 					// app.databaseName = PCParseJasmine.defaultDBName();
 					// derived data
 					// mac hack
-					app.databaseURI = "mongodb://host.docker.internal:27017/" + PCParseJasmine.defaultDBName();
+					app.databaseURI = "mongodb://" + this.hostURL + ":27017/" + PCParseJasmine.defaultDBName();
 					app.publicServerURL = "http://localhost:" + app.port + app.mountPath;
 					app.serverURL = app.publicServerURL;
 					app.cloud = '/parse-server/cloud/main.js';
