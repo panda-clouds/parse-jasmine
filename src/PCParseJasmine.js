@@ -60,7 +60,7 @@ class PCParseJasmine  {
 								this.net = ''
 							}else if(result == 'Linux'){
 								this.hostURL = 'localhost'
-								this.hostURL = '--net host'
+								this.net = '--net host'
 							}
 						})
 				})
@@ -101,7 +101,7 @@ class PCParseJasmine  {
 					return PCBash.runCommandPromise('pwd;ls;cat ' + PCParseJasmine.tempDir() + "/cloud-" + this.seed)
 				})
 				.then(()=>{
-					const command = 'docker run --rm -d ' + this.net +
+					const command = 'docker run --rm -d ' + this.net + ' ' +
 					'--name parse-' + this.seed + ' ' +
 					'-v ' + PCParseJasmine.tempDir() + '/config-' + this.seed + ':/parse-server/configuration.json ' +
 					'-v ' + PCParseJasmine.tempDir() + '/cloud-' + this.seed + ':/parse-server/cloud/main.js ' +
