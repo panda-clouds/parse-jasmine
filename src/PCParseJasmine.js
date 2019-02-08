@@ -57,8 +57,10 @@ class PCParseJasmine  {
 							if(result == 'Darwin'){
 								// this hack is requried when using Docker for mac
 								this.hostURL = 'host.docker.internal'
+								this.net = ''
 							}else if(result == 'Linux'){
 								this.hostURL = 'localhost'
+								this.hostURL = '--net host'
 							}
 						})
 				})
@@ -66,7 +68,7 @@ class PCParseJasmine  {
 					return PCBash.runCommandPromise('mkdir -p ' + PCParseJasmine.tempDir())
 				})
 				.then(()=>{
-					const command = 'docker run --rm -d ' +
+					const command = 'docker run --rm -d ' + this.net +
 					'--name mongo-' + this.seed + ' ' +
 					'-p 27017:27017 ' +
 					'mongo ' +
@@ -99,7 +101,7 @@ class PCParseJasmine  {
 					return PCBash.runCommandPromise('pwd;ls;cat ' + PCParseJasmine.tempDir() + "/cloud-" + this.seed)
 				})
 				.then(()=>{
-					const command = 'docker run --rm -d ' +
+					const command = 'docker run --rm -d ' + this.net +
 					'--name parse-' + this.seed + ' ' +
 					'-v ' + PCParseJasmine.tempDir() + '/config-' + this.seed + ':/parse-server/configuration.json ' +
 					'-v ' + PCParseJasmine.tempDir() + '/cloud-' + this.seed + ':/parse-server/cloud/main.js ' +
