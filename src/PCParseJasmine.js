@@ -68,7 +68,7 @@ class PCParseJasmine  {
 					return PCBash.runCommandPromise('mkdir -p ' + PCParseJasmine.tempDir())
 				})
 				.then(()=>{
-					const command = 'docker run --rm -d ' + this.net +
+					const command = 'docker run --rm -d ' + this.net + ' ' +
 					'--name mongo-' + this.seed + ' ' +
 					'-p 27017:27017 ' +
 					'mongo ' +
