@@ -5,10 +5,10 @@
     "test": "jasmine ./spec/*.spec.js"
   },
   "description": "This class uses docker to spin up a local mongo and parse server instance for testing",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/panda-clouds/string.git"
+    "url": "https://github.com/panda-clouds/parse-jasmine.git"
   },
   "author": {
     "name": "Marc Smith",

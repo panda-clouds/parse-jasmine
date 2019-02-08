@@ -22,15 +22,24 @@ class PCParseJasmine  {
 	}
 	static tempDir(){
 
-		// we have a "temp" directory in the root of this projects
-		var path = __dirname;
+		// This failed because we use Jenkins in docker.
+		// the "write" would go into the jenkins container
+		// and the "read" would go to the host through the docker.sock
+		// also we couldn't match the jenkins volume (which would work)
+		// because the new one kept saying "invalid username/password"
 
-		// Notice the double-backslashes on this following line
-		path = path.replace(/ /g, '\\ ');
+		// A: https://github.com/jenkinsci/docker/issues/174
+		// basically, you can't just move the dir
+		// // we have a "temp" directory in the root of this projects
+		// var path = __dirname;
 
-		// eslint-disable-next-line no-console
-		console.log("tempDir: " + path)
-		return path;
+		// // Notice the double-backslashes on this following line
+		// path = path.replace(/ /g, '\\ ');
+
+		// // eslint-disable-next-line no-console
+		// console.log("tempDir: " + path)
+		// return path;
+		return "/tmp/testing"
 	}
 
 	startParseServer(){
@@ -42,6 +51,9 @@ class PCParseJasmine  {
 		}else{
 
 			return PCBash.runCommandPromise('docker ps')
+				.then(()=>{
+					return PCBash.runCommandPromise('mkdir -p ' + PCParseJasmine.tempDir())
+				})
 				.then(()=>{
 					const command = 'docker run --rm -d ' +
 					'--name mongo-' + this.seed + ' ' +
@@ -76,7 +88,7 @@ class PCParseJasmine  {
 					return PCBash.runCommandPromise('pwd;ls;cat ' + PCParseJasmine.tempDir() + "/cloud-" + this.seed)
 				})
 				.then(()=>{
-					const command = 'docker run -d ' +
+					const command = 'docker run --rm -d ' +
 					'--name parse-' + this.seed + ' ' +
 					'-v ' + PCParseJasmine.tempDir() + '/config-' + this.seed + ':/parse-server/configuration.json ' +
 					'-v ' + PCParseJasmine.tempDir() + '/cloud-' + this.seed + ':/parse-server/cloud/main.js ' +
