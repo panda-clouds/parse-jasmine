@@ -15,6 +15,11 @@ describe('check beforesave', () => {
 Parse.Cloud.define("challenge", function(request, response) {
   response.success("everest");
 });
+Parse.Cloud.define("useDynamicClass", function(request, response) {
+	
+	const MyClass = require(__dirname + '/PCTestClass.js');
+	response.success(MyClass.challenge());
+});
 Parse.Cloud.beforeSave("FailClass",(request,response)=>{
 	if(response && response.error){
 		// Parse Sever V2.x and lower
@@ -37,6 +42,7 @@ Parse.Cloud.beforeSave("PassClass",(request,response)=>{
 	console.log(cloud);
 	const parseRunner = new PCParseJasmine();
 	parseRunner.cloud(cloud);
+	parseRunner.loadFile('./src/PCTestClass.js','PCTestClass.js')
 
 	beforeAll((done) => {
 		parseRunner.startParseServer()
@@ -51,6 +57,16 @@ Parse.Cloud.beforeSave("PassClass",(request,response)=>{
 	it('should return everest', (done) => {
 
 		Parse.Cloud.run("challenge")
+			.then((result)=>{
+				expect(result).toBe("everest");
+				done()
+			},done.fail)
+			.catch(done.fail)
+	});
+
+	it('should read from dynamic class', (done) => {
+
+		Parse.Cloud.run("useDynamicClass")
 			.then((result)=>{
 				expect(result).toBe("everest");
 				done()

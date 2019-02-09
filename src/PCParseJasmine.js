@@ -1,3 +1,12 @@
+const fs = require('fs')
+fs.readFileAsync = function (filename) {
+	return new Promise((resolve, reject) => {
+		fs.readFile(filename, (err, buffer) => {
+			if (err) reject(err); else resolve(buffer.toString());
+		});
+	});
+};
+
 var PCBash = require('@panda-clouds/parse-bash');
 var Parse = require('parse/node');
 const exampleAppId = "example-app-id";
@@ -11,9 +20,15 @@ class PCParseJasmine  {
 		this.seed = now.getTime();
 	}
 
+	loadFile(path,name){
+		this.requireFilePath = path;
+		this.requireFileName = name;
+	}
+
 	cloud(cloudPage){
 		this.cloudPage = cloudPage;
 	}
+
 	static defaultMongoURL(){
 		return "mongodb://host.docker.internal:27017";
 	}
@@ -90,21 +105,32 @@ class PCParseJasmine  {
 					app.databaseURI = "mongodb://" + this.hostURL + ":27017/" + PCParseJasmine.defaultDBName();
 					app.publicServerURL = "http://localhost:" + app.port + app.mountPath;
 					app.serverURL = app.publicServerURL;
-					app.cloud = '/parse-server/cloud/main.js';
+					app.cloud = '/parse-server/cloud/main-' + this.seed + '.js';
 					config.apps = [app];
 					return PCBash.putStringInFile(config, PCParseJasmine.tempDir() + "/config-" + this.seed)
 				})
 				.then(()=>{
-					return PCBash.putStringInFile(this.cloudPage, PCParseJasmine.tempDir() + "/cloud-" + this.seed)
+					return PCBash.runCommandPromise('pwd')
 				})
 				.then(()=>{
-					return PCBash.runCommandPromise('pwd;ls;cat ' + PCParseJasmine.tempDir() + "/cloud-" + this.seed)
+					if(this.requireFilePath){
+						return fs.readFileAsync(this.requireFilePath)
+							.then((result)=>{
+								// eslint-disable-next-line no-console
+								console.log("asyc read " + result)
+								return PCBash.putStringInFile(result, PCParseJasmine.tempDir() + '/' + this.requireFileName)
+							})
+					}
+
+				})
+				.then(()=>{
+					return PCBash.putStringInFile(this.cloudPage, PCParseJasmine.tempDir() + '/main-' + this.seed + '.js')
 				})
 				.then(()=>{
 					const command = 'docker run --rm -d ' + this.net + ' ' +
 					'--name parse-' + this.seed + ' ' +
 					'-v ' + PCParseJasmine.tempDir() + '/config-' + this.seed + ':/parse-server/configuration.json ' +
-					'-v ' + PCParseJasmine.tempDir() + '/cloud-' + this.seed + ':/parse-server/cloud/main.js ' +
+					'-v ' + PCParseJasmine.tempDir() + ':/parse-server/cloud/ ' +
 					'-p 1337:1337 ' +
 					'parseplatform/parse-server:2.8.4 ' +
 					'/parse-server/configuration.json';
@@ -142,7 +168,7 @@ class PCParseJasmine  {
 						});
 				})
 				.then(()=>{
-					const command = 'rm ' + PCParseJasmine.tempDir() + '/cloud-' + this.seed;
+					const command = 'rm ' + PCParseJasmine.tempDir() + '/main-' + this.seed + '.js';
 					return PCBash.runCommandPromise(command)
 						.catch(()=>{
 						});
@@ -152,6 +178,15 @@ class PCParseJasmine  {
 					return PCBash.runCommandPromise(command)
 						.catch(()=>{
 						});
+				})
+				.then(()=>{
+					if(this.requireFileName){
+						const command = 'rm ' + PCParseJasmine.tempDir() + '/' + this.requireFileName;
+						return PCBash.runCommandPromise(command)
+							.catch(()=>{
+							});
+					}
+
 				})
 				.then(()=>{
 					const command = 'docker stop parse-' + this.seed;
