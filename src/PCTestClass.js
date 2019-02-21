@@ -1,12 +1,11 @@
-class PCTestClass  {
-
+class PCTestClass {
 	constructor(request) {
 		// pass the 'request' object
 		this.request = request;
 	}
 
-	static challenge(){
-		return 'everest'
+	static challenge() {
+		return 'everest';
 	}
 }
 
